@@ -7,7 +7,7 @@
 namespace App\Application\DataTransformer\Apps;
 
 use App\Infrastructure\Service\Thumbor;
-use App\Infrastructure\Trait\UrlGeneratorTrait;
+use App\Infrastructure\Service\UrlGeneratorServiceInterface;
 use Ec\Encode\Encode;
 use Ec\Journalist\Domain\Model\Alias;
 use Ec\Journalist\Domain\Model\Department;
@@ -19,7 +19,6 @@ use Ec\Section\Domain\Model\Section;
  */
 class JournalistsDataTransformer
 {
-    use UrlGeneratorTrait;
     private string $aliasId;
     private bool $hasTwitter = false;
     private Journalist $journalist;
@@ -28,10 +27,9 @@ class JournalistsDataTransformer
     private const TWITTER_REGEX = '/^([A-Za-z0-9_]{1,15})$/';
 
     public function __construct(
-        string $extension,
+        private readonly UrlGeneratorServiceInterface $urlGenerator,
         private readonly Thumbor $thumbor,
     ) {
-        $this->setExtension($extension);
     }
 
     /**
@@ -99,7 +97,7 @@ class JournalistsDataTransformer
 
     private function journalistUrl(Journalist $journalist): string
     {
-        return $this->generateUrl(
+        return $this->urlGenerator->generateUrl(
             'https://%s.%s.%s/autores/%s/',
             'www',
             $this->section->siteId(),

@@ -25,6 +25,107 @@ services:
             - '../src/Application/DataTransformer/Apps/Body/'
             - '../src/Application/DataTransformer/Apps/Media/DataTransformers/'
 
+    # Interface bindings for SOLID refactoring
+    App\Infrastructure\Service\MultimediaServiceInterface: '@App\Infrastructure\Service\MultimediaService'
+    App\Infrastructure\Service\UrlGeneratorServiceInterface: '@App\Infrastructure\Service\UrlGeneratorService'
+    Snaapi\Infrastructure\Service\Image\ImageProcessorInterface: '@App\Infrastructure\Service\Thumbor'
+    Snaapi\Infrastructure\Service\Image\ImageSizeConfigurationInterface: '@App\Infrastructure\Service\Image\DefaultImageSizeConfiguration'
+
+    # Thumbor BuilderFactory configuration
+    Thumbor\Url\BuilderFactory:
+        arguments:
+            $server: '%env(THUMBOR_SERVER_URL)%'
+            $secret: '%env(THUMBOR_SECRET_KEY)%'
+
+    # Orchestrator Processors (excluded directory, need explicit registration)
+    App\Orchestrator\Processor\InsertedNewsProcessor:
+        autowire: true
+        autoconfigure: true
+
+    App\Orchestrator\Processor\RecommendedEditorialsProcessor:
+        autowire: true
+        autoconfigure: true
+
+    App\Orchestrator\Processor\MultimediaProcessor:
+        autowire: true
+        autoconfigure: true
+
+    App\Orchestrator\Processor\MembershipLinksProcessor:
+        autowire: true
+        autoconfigure: true
+
+    # Editorial Pipeline Configuration (SOLID Refactored)
+    App\Orchestrator\Pipeline\EditorialPipeline:
+        arguments:
+            $stages:
+                - '@App\Orchestrator\Pipeline\Stage\FetchEditorialStage'
+                - '@App\Orchestrator\Pipeline\Stage\ExtractAggregatorIdsStage'
+                - '@App\Orchestrator\Pipeline\Stage\ParallelFetchStage'
+                - '@App\Orchestrator\Pipeline\Stage\ComposeResponseStage'
+
+    # Pipeline Stages (auto-wired)
+    App\Orchestrator\Pipeline\Stage\:
+        resource: '../src/Orchestrator/Pipeline/Stage/*'
+        autoconfigure: true
+
+    # Extractor with ID extraction strategies (tagged)
+    App\Orchestrator\Extractor\Strategy\:
+        resource: '../src/Orchestrator/Extractor/Strategy/*'
+        tags: ['app.id_extractor_strategy']
+
+    App\Orchestrator\Extractor\AggregatorIdExtractor:
+        arguments:
+            $strategies: !tagged_iterator app.id_extractor_strategy
+
+    # Parallel Fetcher Resolvers (auto-configured)
+    App\Orchestrator\ParallelFetcher\Resolver\:
+        resource: '../src/Orchestrator/ParallelFetcher/Resolver/*'
+        autoconfigure: true
+
+    # Response Composer Transformers (auto-configured)
+    App\Orchestrator\Composer\Transformer\:
+        resource: '../src/Orchestrator/Composer/Transformer/*'
+        autoconfigure: true
+
+    # Editorial Orchestrators
+    App\Orchestrator\Chain\EditorialOrchestrator:
+        autowire: true
+        tags: ['app.orchestrators']
+
+    App\Orchestrator\OrchestratorChainHandler:
+        autowire: true
+        autoconfigure: true
+
+    App\Orchestrator\OrchestratorChain:
+        autowire: true
+        autoconfigure: true
+
+    # Multimedia Orchestrators
+    App\Orchestrator\Chain\Multimedia\MultimediaPhotoOrchestrator:
+        autowire: true
+        tags: ['app.multimedia.orchestrators']
+
+    App\Orchestrator\Chain\Multimedia\MultimediaEmbedVideoOrchestrator:
+        autowire: true
+        tags: ['app.multimedia.orchestrators']
+
+    App\Orchestrator\Chain\Multimedia\MultimediaWidgetOrchestrator:
+        autowire: true
+        tags: ['app.multimedia.orchestrators']
+
+    App\Orchestrator\Chain\Multimedia\MultimediaOrchestratorHandler:
+        autowire: true
+        autoconfigure: true
+
+    App\Orchestrator\Chain\Multimedia\MultimediaOrchestratorChain:
+        autowire: true
+        autoconfigure: true
+
+    # Orchestrator Handlers (excluded directory, need explicit registration)
+    App\Orchestrator\Handler\GenericChainHandler:
+        autowire: true
+        autoconfigure: true
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 

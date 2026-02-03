@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @copyright
  */
 
-namespace App\Infrastructure\Trait;
+namespace App\Infrastructure\Service;
 
-use App\Infrastructure\Service\Thumbor;
 use Ec\Editorial\Domain\Model\Multimedia\Multimedia;
 use Ec\Editorial\Domain\Model\Multimedia\MultimediaId;
 use Ec\Editorial\Domain\Model\Multimedia\PhotoExist;
@@ -17,13 +18,22 @@ use Ec\Multimedia\Domain\Model\Multimedia as MultimediaModel;
 use Ec\Multimedia\Domain\Model\Photo\Photo;
 
 /**
- * @author Razvan Alin Munteanu <arazvan@elconfidencial.com>
+ * Service for multimedia processing operations.
+ *
+ * Handles extraction of multimedia IDs, generation of responsive image shots,
+ * and configuration of standard image sizes for different display contexts.
+ *
+ * This service replaces the MultimediaTrait, following the Single Responsibility
+ * Principle by encapsulating multimedia processing logic in a dedicated service
+ * that can be injected, tested, and mocked independently.
+ *
+ * @author SNAAPI Team
  */
-trait MultimediaTrait
+final class MultimediaService implements MultimediaServiceInterface
 {
-    private Thumbor $thumbor;
-
     /**
+     * Standard image sizes for responsive layouts.
+     *
      * @var array<string, array<string, string>>
      */
     private array $sizes = [
@@ -41,27 +51,21 @@ trait MultimediaTrait
         ],
     ];
 
-    public function thumbor(): Thumbor
-    {
-        return $this->thumbor;
-    }
-
-    private function setThumbor(Thumbor $thumbor): void
-    {
-        $this->thumbor = $thumbor;
+    /**
+     * @param Thumbor $thumbor Service for generating image URLs with transformations
+     */
+    public function __construct(
+        private readonly Thumbor $thumbor
+    ) {
     }
 
     /**
-     * @return array<string, array<string, string>>
+     * {@inheritDoc}
      */
-    public function sizes(): array
-    {
-        return $this->sizes;
-    }
-
-    private function getMultimediaId(Multimedia $multimedia): ?MultimediaId
+    public function getMultimediaId(Multimedia $multimedia): ?MultimediaId
     {
         $multimediaId = null;
+
         if ($multimedia instanceof PhotoExist) {
             $multimediaId = $multimedia->id();
         }
@@ -77,9 +81,9 @@ trait MultimediaTrait
     }
 
     /**
-     * @return array<string, string>
+     * {@inheritDoc}
      */
-    private function getShotsLandscape(MultimediaModel $multimedia): array
+    public function getShotsLandscape(MultimediaModel $multimedia): array
     {
         $shots = [];
         $clippings = $multimedia->clippings();
@@ -101,11 +105,9 @@ trait MultimediaTrait
     }
 
     /**
-     * @param array{opening: MultimediaModel\MultimediaPhoto, resource: Photo} $multimediaOpening
-     *
-     * @return array<string, string>
+     * {@inheritDoc}
      */
-    private function getShotsLandscapeFromMedia(array $multimediaOpening): array
+    public function getShotsLandscapeFromMedia(array $multimediaOpening): array
     {
         $shots = [];
         $clippings = $multimediaOpening['opening']->clippings();
@@ -124,5 +126,13 @@ trait MultimediaTrait
         }
 
         return $shots;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function sizes(): array
+    {
+        return $this->sizes;
     }
 }
