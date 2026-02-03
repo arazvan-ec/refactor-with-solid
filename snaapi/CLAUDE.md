@@ -1,4 +1,7 @@
-# CLAUDE.md
+# SNAAPI - Documentación Detallada
+
+> **Nota**: Para onboarding rápido, lee primero `/CLAUDE.md` en la raíz del proyecto.
+> Este archivo contiene detalles específicos de la arquitectura de SNAAPI.
 
 Agent instructions for SNAAPI - Symfony 6.4 API Gateway.
 
