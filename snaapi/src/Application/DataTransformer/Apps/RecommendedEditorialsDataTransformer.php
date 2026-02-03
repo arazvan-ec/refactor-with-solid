@@ -6,9 +6,8 @@
 
 namespace App\Application\DataTransformer\Apps;
 
-use App\Infrastructure\Service\Thumbor;
-use App\Infrastructure\Trait\MultimediaTrait;
-use App\Infrastructure\Trait\UrlGeneratorTrait;
+use App\Infrastructure\Service\MultimediaServiceInterface;
+use App\Infrastructure\Service\UrlGeneratorServiceInterface;
 use Ec\Editorial\Domain\Model\Editorial;
 use Ec\Encode\Encode;
 use Ec\Multimedia\Domain\Model\Multimedia;
@@ -20,8 +19,6 @@ use Ec\Section\Domain\Model\Section;
  */
 class RecommendedEditorialsDataTransformer
 {
-    use UrlGeneratorTrait;
-    use MultimediaTrait;
     /** @var string */
     private const TYPE = 'recommendededitorial';
 
@@ -31,11 +28,9 @@ class RecommendedEditorialsDataTransformer
     private array $resolveData;
 
     public function __construct(
-        string $extension,
-        Thumbor $thumbor,
+        private readonly MultimediaServiceInterface $multimediaService,
+        private readonly UrlGeneratorServiceInterface $urlGenerator,
     ) {
-        $this->setExtension($extension);
-        $this->setThumbor($thumbor);
     }
 
     /**
@@ -103,7 +98,7 @@ class RecommendedEditorialsDataTransformer
             $editorial->id()->id()
         );
 
-        return $this->generateUrl(
+        return $this->urlGenerator->generateUrl(
             'https://%s.%s.%s/%s',
             $section->isSubdomainBlog() ? 'blog' : 'www',
             $section->siteId(),
@@ -130,7 +125,7 @@ class RecommendedEditorialsDataTransformer
             return $shots;
         }
 
-        return $this->getShotsLandscape($multimedia);
+        return $this->multimediaService->getShotsLandscape($multimedia);
     }
 
     /**
@@ -165,6 +160,6 @@ class RecommendedEditorialsDataTransformer
             return $shots;
         }
 
-        return $this->getShotsLandscapeFromMedia($multimedia);
+        return $this->multimediaService->getShotsLandscapeFromMedia($multimedia);
     }
 }

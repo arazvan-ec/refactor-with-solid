@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace App\Application\DataTransformer\Apps\Strategy;
 
-use App\Infrastructure\Trait\UrlGeneratorTrait;
+use App\Infrastructure\Service\UrlGeneratorServiceInterface;
 use Ec\Section\Domain\Model\Section;
 
 /**
@@ -23,11 +23,9 @@ use Ec\Section\Domain\Model\Section;
  */
 final class SectionTransformer implements TransformerStrategyInterface
 {
-    use UrlGeneratorTrait;
-
-    public function __construct(string $extension)
-    {
-        $this->setExtension($extension);
+    public function __construct(
+        private readonly UrlGeneratorServiceInterface $urlGenerator,
+    ) {
     }
 
     /**
@@ -53,7 +51,7 @@ final class SectionTransformer implements TransformerStrategyInterface
 
         $section = $data['section'];
 
-        $url = $this->generateUrl(
+        $url = $this->urlGenerator->generateUrl(
             'https://%s.%s.%s/%s',
             $section->isSubdomainBlog() ? 'blog' : 'www',
             $section->siteId(),

@@ -41,3 +41,9 @@ services:
         arguments:
             $queryMultimediaClient: '@Ec\Multimedia\Infrastructure\Client\Http\Media\QueryMultimediaClient'
             $logger: '@logger'
+
+    # Orchestrator Processors (SOLID refactoring)
+    App\Orchestrator\Processor\:
+        resource: '../../src/Orchestrator/Processor/'
+        exclude:
+            - '../../src/Orchestrator/Processor/ProcessorInterface.php'

@@ -25,6 +25,74 @@ services:
             - '../src/Application/DataTransformer/Apps/Body/'
             - '../src/Application/DataTransformer/Apps/Media/DataTransformers/'
 
+    # Interface bindings for SOLID refactoring
+    App\Infrastructure\Service\MultimediaServiceInterface: '@App\Infrastructure\Service\MultimediaService'
+    App\Infrastructure\Service\UrlGeneratorServiceInterface: '@App\Infrastructure\Service\UrlGeneratorService'
+    Snaapi\Infrastructure\Service\Image\ImageProcessorInterface: '@App\Infrastructure\Service\Thumbor'
+    Snaapi\Infrastructure\Service\Image\ImageSizeConfigurationInterface: '@App\Infrastructure\Service\Image\DefaultImageSizeConfiguration'
+
+    # Thumbor BuilderFactory configuration
+    Thumbor\Url\BuilderFactory:
+        arguments:
+            $server: '%env(THUMBOR_SERVER_URL)%'
+            $secret: '%env(THUMBOR_SECRET_KEY)%'
+
+    # Orchestrator Processors (excluded directory, need explicit registration)
+    App\Orchestrator\Processor\InsertedNewsProcessor:
+        autowire: true
+        autoconfigure: true
+
+    App\Orchestrator\Processor\RecommendedEditorialsProcessor:
+        autowire: true
+        autoconfigure: true
+
+    App\Orchestrator\Processor\MultimediaProcessor:
+        autowire: true
+        autoconfigure: true
+
+    App\Orchestrator\Processor\MembershipLinksProcessor:
+        autowire: true
+        autoconfigure: true
+
+    # Editorial Orchestrators
+    App\Orchestrator\Chain\EditorialOrchestrator:
+        autowire: true
+        tags: ['app.orchestrators']
+
+    App\Orchestrator\OrchestratorChainHandler:
+        autowire: true
+        autoconfigure: true
+
+    App\Orchestrator\OrchestratorChain:
+        autowire: true
+        autoconfigure: true
+
+    # Multimedia Orchestrators
+    App\Orchestrator\Chain\Multimedia\MultimediaPhotoOrchestrator:
+        autowire: true
+        tags: ['app.multimedia.orchestrators']
+
+    App\Orchestrator\Chain\Multimedia\MultimediaEmbedVideoOrchestrator:
+        autowire: true
+        tags: ['app.multimedia.orchestrators']
+
+    App\Orchestrator\Chain\Multimedia\MultimediaWidgetOrchestrator:
+        autowire: true
+        tags: ['app.multimedia.orchestrators']
+
+    App\Orchestrator\Chain\Multimedia\MultimediaOrchestratorHandler:
+        autowire: true
+        autoconfigure: true
+
+    App\Orchestrator\Chain\Multimedia\MultimediaOrchestratorChain:
+        autowire: true
+        autoconfigure: true
+
+    # Orchestrator Handlers (excluded directory, need explicit registration)
+    App\Orchestrator\Handler\GenericChainHandler:
+        autowire: true
+        autoconfigure: true
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 

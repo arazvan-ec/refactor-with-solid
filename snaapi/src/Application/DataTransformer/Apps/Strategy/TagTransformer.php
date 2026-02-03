@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace App\Application\DataTransformer\Apps\Strategy;
 
-use App\Infrastructure\Trait\UrlGeneratorTrait;
+use App\Infrastructure\Service\UrlGeneratorServiceInterface;
 use Ec\Encode\Encode;
 use Ec\Section\Domain\Model\Section;
 use Ec\Tag\Domain\Model\Tag;
@@ -25,11 +25,9 @@ use Ec\Tag\Domain\Model\Tag;
  */
 final class TagTransformer implements TransformerStrategyInterface
 {
-    use UrlGeneratorTrait;
-
-    public function __construct(string $extension)
-    {
-        $this->setExtension($extension);
+    public function __construct(
+        private readonly UrlGeneratorServiceInterface $urlGenerator,
+    ) {
     }
 
     /**
@@ -76,7 +74,7 @@ final class TagTransformer implements TransformerStrategyInterface
             $result[] = [
                 'id' => $tag->id()->id(),
                 'name' => $tag->name(),
-                'url' => $this->generateUrl(
+                'url' => $this->urlGenerator->generateUrl(
                     'https://%s.%s.%s/%s',
                     'www',
                     $section->siteId(),

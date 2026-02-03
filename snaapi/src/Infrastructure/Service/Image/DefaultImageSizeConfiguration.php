@@ -6,6 +6,9 @@ namespace App\Infrastructure\Service\Image;
 
 use Snaapi\Infrastructure\Service\Image\ImageSizeConfigurationInterface;
 
+// Note: This interface lives in the Snaapi namespace (not App)
+// to maintain compatibility with external dependencies
+
 /**
  * Default implementation of image size configuration.
  *

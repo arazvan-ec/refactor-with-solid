@@ -6,8 +6,8 @@
 
 namespace App\Application\DataTransformer\Apps;
 
+use App\Infrastructure\Service\MultimediaServiceInterface;
 use App\Infrastructure\Service\Thumbor;
-use App\Infrastructure\Trait\MultimediaTrait;
 use Ec\Editorial\Domain\Model\Multimedia\Multimedia as MultimediaEditorial;
 use Ec\Multimedia\Domain\Model\ClippingTypes;
 use Ec\Multimedia\Domain\Model\Multimedia;
@@ -17,7 +17,6 @@ use Ec\Multimedia\Domain\Model\Multimedia;
  */
 class DetailsMultimediaDataTransformer implements MultimediaDataTransformer
 {
-    use MultimediaTrait;
 
     /** @var string */
     private const WIDTH = 'width';
@@ -171,8 +170,10 @@ class DetailsMultimediaDataTransformer implements MultimediaDataTransformer
     private array $arrayMultimedia;
     private MultimediaEditorial $openingMultimedia;
 
-    public function __construct(private readonly Thumbor $thumborService)
-    {
+    public function __construct(
+        private readonly MultimediaServiceInterface $multimediaService,
+        private readonly Thumbor $thumborService,
+    ) {
     }
 
     /**
@@ -191,7 +192,7 @@ class DetailsMultimediaDataTransformer implements MultimediaDataTransformer
      */
     public function read(): array
     {
-        $multimediaId = $this->getMultimediaId($this->openingMultimedia);
+        $multimediaId = $this->multimediaService->getMultimediaId($this->openingMultimedia);
         if (!$multimediaId || empty($this->arrayMultimedia[$multimediaId->id()])) {
             return [];
         }

@@ -11,7 +11,7 @@ namespace App\Application\DataTransformer\Apps\Strategy;
 use App\Application\DataTransformer\Apps\AppsDataTransformer;
 use App\Infrastructure\Enum\ClossingModeEnum;
 use App\Infrastructure\Enum\EditorialTypesEnum;
-use App\Infrastructure\Trait\UrlGeneratorTrait;
+use App\Infrastructure\Service\UrlGeneratorServiceInterface;
 use Ec\Editorial\Domain\Model\Editorial;
 use Ec\Encode\Encode;
 use Ec\Section\Domain\Model\Section;
@@ -34,8 +34,6 @@ use Ec\Tag\Domain\Model\Tag;
  */
 final class CompositeDetailsTransformer implements AppsDataTransformer
 {
-    use UrlGeneratorTrait;
-
     private const DATE_FORMAT = 'Y-m-d H:i:s';
 
     private Editorial $editorial;
@@ -51,14 +49,12 @@ final class CompositeDetailsTransformer implements AppsDataTransformer
      * @param iterable<TransformerStrategyInterface> $strategies Collection of transformation strategies
      */
     public function __construct(
-        string $extension,
+        private readonly UrlGeneratorServiceInterface $urlGenerator,
         private readonly SectionTransformer $sectionTransformer,
         private readonly TagTransformer $tagTransformer,
         private readonly HierarchyTransformer $hierarchyTransformer,
         private readonly TwitterFormatter $twitterFormatter,
     ) {
-        $this->setExtension($extension);
-
         // Register all strategies
         $this->strategies = [
             $this->sectionTransformer,
@@ -196,7 +192,7 @@ final class CompositeDetailsTransformer implements AppsDataTransformer
             $this->editorial->id()->id()
         );
 
-        return $this->generateUrl(
+        return $this->urlGenerator->generateUrl(
             'https://%s.%s.%s/%s',
             $this->section->isSubdomainBlog() ? 'blog' : 'www',
             $this->section->siteId(),

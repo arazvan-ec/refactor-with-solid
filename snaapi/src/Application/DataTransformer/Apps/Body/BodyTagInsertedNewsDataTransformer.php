@@ -8,9 +8,8 @@ declare(strict_types=1);
 
 namespace App\Application\DataTransformer\Apps\Body;
 
-use App\Infrastructure\Service\Thumbor;
-use App\Infrastructure\Trait\MultimediaTrait;
-use App\Infrastructure\Trait\UrlGeneratorTrait;
+use App\Infrastructure\Service\MultimediaServiceInterface;
+use App\Infrastructure\Service\UrlGeneratorServiceInterface;
 use Assert\Assertion;
 use Ec\Editorial\Domain\Model\Body\BodyTagInsertedNews;
 use Ec\Editorial\Domain\Model\Editorial;
@@ -25,15 +24,10 @@ use Ec\Section\Domain\Model\Section;
  */
 class BodyTagInsertedNewsDataTransformer extends ElementTypeDataTransformer
 {
-    use UrlGeneratorTrait;
-    use MultimediaTrait;
-
     public function __construct(
-        Thumbor $thumbor,
-        string $extension,
+        private readonly MultimediaServiceInterface $multimediaService,
+        private readonly UrlGeneratorServiceInterface $urlGenerator,
     ) {
-        $this->setExtension($extension);
-        $this->setThumbor($thumbor);
     }
 
     public function canTransform(): string
@@ -95,7 +89,7 @@ class BodyTagInsertedNewsDataTransformer extends ElementTypeDataTransformer
             $editorial->id()->id()
         );
 
-        return $this->generateUrl(
+        return $this->urlGenerator->generateUrl(
             'https://%s.%s.%s/%s',
             $section->isSubdomainBlog() ? 'blog' : 'www',
             $section->siteId(),
@@ -118,7 +112,7 @@ class BodyTagInsertedNewsDataTransformer extends ElementTypeDataTransformer
             return $shots;
         }
 
-        return $this->getShotsLandscape($multimedia);
+        return $this->multimediaService->getShotsLandscape($multimedia);
     }
 
     /**
@@ -138,6 +132,6 @@ class BodyTagInsertedNewsDataTransformer extends ElementTypeDataTransformer
             return [];
         }
 
-        return $this->getShotsLandscapeFromMedia($multimedia);
+        return $this->multimediaService->getShotsLandscapeFromMedia($multimedia);
     }
 }
