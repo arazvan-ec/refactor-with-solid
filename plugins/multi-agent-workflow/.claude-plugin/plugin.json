@@ -1,0 +1,30 @@
+{
+  "name": "multi-agent-workflow",
+  "version": "2.3.1",
+  "description": "Compound engineering framework for multi-agent AI development with SDK lifecycle hooks. 21 specialized agents, 24 workflow commands, 12 skills (including token-advisor), institutional knowledge system (docs/solutions/), and quality-gated checkpoints with DDD architecture support.",
+  "author": {
+    "name": "arazvan-ec",
+    "url": "https://github.com/arazvan-ec"
+  },
+  "homepage": "https://github.com/arazvan-ec/workflow",
+  "repository": "https://github.com/arazvan-ec/workflow",
+  "license": "MIT",
+  "keywords": [
+    "compound-engineering",
+    "multi-agent",
+    "workflow-automation",
+    "parallel-development",
+    "ddd",
+    "domain-driven-design",
+    "tdd",
+    "test-driven-development",
+    "code-review",
+    "quality-assurance",
+    "lifecycle-hooks",
+    "mcp-integration",
+    "token-optimization"
+  ],
+  "commands": "./commands/",
+  "agents": "./agents/",
+  "skills": "./skills/"
+}
