@@ -62,8 +62,7 @@ implementation-only  # Después de task-breakdown
 
 | Feature | Estado | Ubicación |
 |---------|--------|-----------|
-| snaapi-solid-refactor | Planning | `.ai/project/features/snaapi-solid-refactor/` |
-| snaapi-scalable-architecture | In Progress | `.ai/project/features/snaapi-scalable-architecture/` |
+| snaapi-solid-refactor-http | Planning Complete | `.ai/project/features/snaapi-solid-refactor-http/` |
 | workflow-improvements-2026 | In Progress | `.ai/project/features/workflow-improvements-2026/` |
 
 ## Estructura de Directorios
@@ -99,6 +98,7 @@ implementation-only  # Después de task-breakdown
 
 Cuando necesites detalles específicos:
 - **Arquitectura detallada**: `snaapi/CLAUDE.md`
-- **Plan de refactoring SOLID**: `.ai/project/features/snaapi-solid-refactor/REFACTORING_PLAN.md`
-- **Propuesta arquitectura**: `.ai/project/features/snaapi-solid-refactor/ARCHITECTURE_PROPOSAL.md`
+- **Plan de refactoring SOLID**: `.ai/project/features/snaapi-solid-refactor-http/15_solutions.md`
+- **Specs funcionales**: `.ai/project/features/snaapi-solid-refactor-http/12_specs.md`
+- **Tareas backend**: `.ai/project/features/snaapi-solid-refactor-http/30_tasks_backend.md`
 - **Configuración proyecto**: `.ai/project/config.yaml`
