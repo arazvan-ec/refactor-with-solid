@@ -54,6 +54,39 @@ services:
         autowire: true
         autoconfigure: true
 
+    # Editorial Pipeline Configuration (SOLID Refactored)
+    App\Orchestrator\Pipeline\EditorialPipeline:
+        arguments:
+            $stages:
+                - '@App\Orchestrator\Pipeline\Stage\FetchEditorialStage'
+                - '@App\Orchestrator\Pipeline\Stage\ExtractAggregatorIdsStage'
+                - '@App\Orchestrator\Pipeline\Stage\ParallelFetchStage'
+                - '@App\Orchestrator\Pipeline\Stage\ComposeResponseStage'
+
+    # Pipeline Stages (auto-wired)
+    App\Orchestrator\Pipeline\Stage\:
+        resource: '../src/Orchestrator/Pipeline/Stage/*'
+        autoconfigure: true
+
+    # Extractor with ID extraction strategies (tagged)
+    App\Orchestrator\Extractor\Strategy\:
+        resource: '../src/Orchestrator/Extractor/Strategy/*'
+        tags: ['app.id_extractor_strategy']
+
+    App\Orchestrator\Extractor\AggregatorIdExtractor:
+        arguments:
+            $strategies: !tagged_iterator app.id_extractor_strategy
+
+    # Parallel Fetcher Resolvers (auto-configured)
+    App\Orchestrator\ParallelFetcher\Resolver\:
+        resource: '../src/Orchestrator/ParallelFetcher/Resolver/*'
+        autoconfigure: true
+
+    # Response Composer Transformers (auto-configured)
+    App\Orchestrator\Composer\Transformer\:
+        resource: '../src/Orchestrator/Composer/Transformer/*'
+        autoconfigure: true
+
     # Editorial Orchestrators
     App\Orchestrator\Chain\EditorialOrchestrator:
         autowire: true
